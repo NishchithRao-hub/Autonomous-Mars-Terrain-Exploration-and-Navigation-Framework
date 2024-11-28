@@ -15,7 +15,7 @@ conf["viewer"]["night_color"] = (250,250,250)
 env = gym.make('mars_explorer:exploConf-v1', conf=conf)
 observation = env.reset()
 
-for step in range(3):
+for step in range(10):
 
     img = env.reset()
     rend = env.render()

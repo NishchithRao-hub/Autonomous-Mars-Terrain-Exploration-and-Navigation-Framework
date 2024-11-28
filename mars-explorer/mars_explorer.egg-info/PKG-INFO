@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: mars-explorer
+Version: 0.0.1
+Summary: Autonomous exploration of unknown planetary surface using lidar and RL techniques
+Keywords: exploration,robotics,environment,agent,rl,openaigym,openai-gym,gym
+Requires-Dist: gym>=0.9.6
+Requires-Dist: numpy>=1.19.2
+Requires-Dist: pygame>=2.0.0

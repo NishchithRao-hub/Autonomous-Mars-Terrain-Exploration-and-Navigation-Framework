@@ -23,10 +23,10 @@ def get_conf():
     # conf["viewer"]["background_img"] = "../img/mars.jpg"
     # conf["viewer"]["light_mask"] = "../img/light_350_hard.png"
 
-    conf["viewer"]["drone_img"] = "C:/Users/nishc/PycharmProjects/Reinforcement-Learning-Based-Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework/mars-explorer/tests/img/drone.png"
-    conf["viewer"]["obstacle_img"] = "C:/Users/nishc/PycharmProjects/Reinforcement-Learning-Based-Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework/mars-explorer/tests/img/block.png"
-    conf["viewer"]["background_img"] = "C:/Users/nishc/PycharmProjects/Reinforcement-Learning-Based-Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework/mars-explorer/tests/img/mars.jpg"
-    conf["viewer"]["light_mask"] = "C:/Users/nishc/PycharmProjects/Reinforcement-Learning-Based-Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework/mars-explorer/tests/img/light_350_hard.png"
+    conf["viewer"]["drone_img"] = "mars-explorer/tests/img/drone.png"
+    conf["viewer"]["obstacle_img"] = "mars-explorer/tests/img/block.png"
+    conf["viewer"]["background_img"] = "mars-explorer/tests/img/mars.jpg"
+    conf["viewer"]["light_mask"] = "mars-explorer/tests/img/light_350_hard.png"
     return conf
 
 def getArgs():
