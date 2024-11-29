@@ -10,9 +10,8 @@ from gym import error, spaces, utils
 from gym.utils import seeding
 
 class ExplorerConf(gym.Env):
-    metadata = {'render_modes': ['rgb_array'],
-                'video.frames_per_second': 6,
-                'render_fps': 60}
+    metadata = {'render.modes': ['rgb_array'],
+                'video.frames_per_second': 6}
 
     """"Given that I can not pass configuration file via rlllib, I created another
     environment only for the open ai gym"""
@@ -32,22 +31,12 @@ class ExplorerConf(gym.Env):
         self.SIZE = self.conf["size"]
 
         self.action_space = gym.spaces.Discrete(4)
-        self.observation_space = gym.spaces.Box(0,255,(self.sizeX, self.sizeY, 1), dtype=int)
+        self.observation_space = gym.spaces.Box(0.,1.,(self.sizeX, self.sizeY, 1))
 
         self.viewerActive = False
 
     # def reset(self, initial=[0,0]):
-    def reset(self, seed=None,options=None):
-
-        if seed is not None:
-            self.np_random, seed = gym.utils.seeding.np_random(seed)
-        else:
-            self.np_random = np.random
-
-        if options is not None:
-            initial_position = options.get("initial", self.conf["initial"])
-        else:
-            initial_position = self.conf["initial"]
+    def reset(self):
 
         self.maxSteps = self.conf["max_steps"]
 
@@ -87,8 +76,8 @@ class ExplorerConf(gym.Env):
         self._activateLidar()
         self._updateMaps()
 
-        self.outputMap = (self.exploredMap.copy() * 255).astype(int)
-        self.outputMap[self.x, self.y] = 153
+        self.outputMap = self.exploredMap.copy()
+        self.outputMap[self.x, self.y] = 0.6
 
         self.new_state = np.reshape(self.outputMap, (self.sizeX, self.sizeY,1))
         self.reward = 0
@@ -101,12 +90,7 @@ class ExplorerConf(gym.Env):
         self.collision = False
         self.action = 0
 
-        info = {
-            "map_size": self.SIZE,
-            "initial_position": [self.x, self.y]
-        }
-
-        return self.new_state, info
+        return self.new_state
 
 
     def action_space_sample(self):
@@ -229,23 +213,8 @@ class ExplorerConf(gym.Env):
         self._checkDone()
         self._updateTrajectory()
 
-        self.new_state = np.reshape(self.outputMap, (self.sizeX, self.sizeY,1))
-        self.new_state = np.clip(self.new_state, 0, 255).astype(int)
-
-        info = {
-            "time_step": self.timeStep,
-            "position": (self.x, self.y),
-            "explored_cells": np.count_nonzero(self.exploredMap),
-            "collision": self.collision,
-            "out_of_bounds": self.out_of_bounds
-        }
-
-        done = self.done
-
-        if self.timeStep > self.maxSteps:
-            done = True
-
-        return self.new_state, self.reward, done, info
+        info = {}
+        return self.new_state, self.reward, self.done, info
 
 
     def close(self):

@@ -6,11 +6,11 @@ DEFAULT_CONFIG={
     #  configuration regarding the movements of uav
     "movementCost":0.2,
 
-    # ======== ENVIROMENT =======
+    # ======== ENVIRONMENT =======
     # configuration regarding the random map generation
     # absolute number of obstacles, randomly placed in env
     "obstacles":12,
-    # if rows/colums activated the obstacles will be placed in a semi random
+    # if rows/columns activated the obstacles will be placed in a semi random
     # spacing
     "number_rows":None,
     "number_columns":None,
@@ -34,7 +34,7 @@ DEFAULT_CONFIG={
     # ======== VIEWER =========
     "viewer":{"width":21*30,
               "height":21*30,
-              "title":"Mars-Explorer-V01",
+              "title":"Mars-Explorer-V1",
               "drone_img":'mars-explorer/tests/img/drone.png',
               "obstacle_img":'mars-explorer/tests/img/block.png',
               "background_img":'mars-explorer/tests/img/mars.jpg',

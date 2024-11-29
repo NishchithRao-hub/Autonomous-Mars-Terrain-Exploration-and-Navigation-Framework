@@ -1,10 +1,8 @@
 # Project setup
 # Video link: https://youtu.be/3UxnelT9aCo
 import pygame as pg
-
 import sys, os
 import numpy as np
-
 from mars_explorer.render.sprites import *
 
 class Viewer():
