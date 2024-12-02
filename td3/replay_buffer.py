@@ -1,60 +1,59 @@
 import numpy as np
 import random
-import torch
 
 class ReplayBuffer:
-    def __init__(self, state_dim, action_dim, max_size=int(1e6)):
+    """
+    Replay Buffer for storing and sampling experience tuples.
+
+    Args:
+        buffer_size (int): Maximum capacity of the buffer.
+        batch_size (int): Number of samples to draw from the buffer in each batch.
+    """
+
+    def __init__(self, buffer_size, batch_size):
+        self.buffer_size = buffer_size
+        self.batch_size = batch_size
+        self.buffer = []  # List to store experience tuples
+        self.pos = 0  # Index of the next position to add to the buffer
+
+    def add(self, state, action, action_values, reward, next_state, done):
         """
-        Initialize the Replay Buffer.
+        Adds an experience tuple to the buffer.
+
         Args:
-            state_dim (int): Dimension of the state space.
-            action_dim (int): Dimension of the action space.
-            max_size (int): Maximum size of the buffer.
+            state (np.array): Current state of the environment.
+            action (np.array): Action taken in the current state.
+            action_values (np.array): Action values predicted by the actor network.
+            reward (float): Reward received from the environment.
+            next_state (np.array): Next state of the environment.
+            done (bool): Whether the episode has terminated.
         """
-        self.max_size = max_size
-        self.ptr = 0
-        self.size = 0
 
-        # Allocate memory for the buffer
-        self.state = np.zeros((max_size, state_dim), dtype=np.float32)
-        self.action = np.zeros((max_size, action_dim), dtype=np.float32)
-        self.next_state = np.zeros((max_size, state_dim), dtype=np.float32)
-        self.reward = np.zeros((max_size, 1), dtype=np.float32)
-        self.done = np.zeros((max_size, 1), dtype=np.float32)
+        if len(self.buffer) < self.buffer_size:
+            self.buffer.append(None)
+        self.buffer[self.pos] = (state, action, action_values, reward, next_state, done)
+        self.pos = (self.pos + 1) % self.buffer_size
 
-    def add(self, state, action, reward, next_state, done):
+    def sample(self):
         """
-        Add a new experience to the buffer.
-        Args:
-            state (np.array): Current state.
-            action (np.array): Action taken.
-            reward (float): Reward received.
-            next_state (np.array): Next state after taking the action.
-            done (bool): Whether the episode is done.
-        """
-        self.state[self.ptr] = state
-        self.action[self.ptr] = action
-        self.reward[self.ptr] = reward
-        self.next_state[self.ptr] = next_state
-        self.done[self.ptr] = done
+        Samples a batch of experience tuples from the buffer.
 
-        self.ptr = (self.ptr + 1) % self.max_size
-        self.size = min(self.size + 1, self.max_size)
-
-    def sample(self, batch_size):
-        """
-        Sample a batch of experiences from the buffer.
-        Args:
-            batch_size (int): Number of experiences to sample.
         Returns:
-            dict: A dictionary containing sampled states, actions, rewards, next states, and done flags.
+            tuple: A tuple of numpy arrays containing states, actions, action values, rewards, next states, and done
+            flags.
         """
-        idxs = np.random.randint(0, self.size, size=batch_size)
-        batch = {
-            "state": torch.FloatTensor(self.state[idxs]),
-            "action": torch.FloatTensor(self.action[idxs]),
-            "reward": torch.FloatTensor(self.reward[idxs]),
-            "next_state": torch.FloatTensor(self.next_state[idxs]),
-            "done": torch.FloatTensor(self.done[idxs]),
-        }
-        return batch
+
+        batch = random.sample(self.buffer, self.batch_size)
+        states, actions, action_values, rewards, next_states, dones = zip(*batch)
+        return (np.array(states),
+                np.array(actions),
+                np.array(action_values),
+                np.array(rewards),
+                np.array(next_states),
+                np.array(dones))
+
+    def size(self):
+        """
+        Returns the current size of the buffer.
+        """
+        return len(self.buffer)
