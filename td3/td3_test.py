@@ -59,8 +59,6 @@ def plot_curves(arr_list, legend_list, color_list, ylabel, fig_title, smoothing 
     ax.set_title(f"{fig_title}")
     ax.legend(handles=h_list)
 
-    plt.show()
-
 
 if __name__ == "__main__":
     """
@@ -83,8 +81,8 @@ if __name__ == "__main__":
     action_dim =env.action_space.n                               # 4 discrete actions (up, down, left, right)
 
     # Training parameters
-    num_trails = 10                                               # Number of trials
-    episodes_per_trail = 5000                                      # Episodes per training trial
+    num_trails = 15                                              # Number of trials
+    episodes_per_trail = 3000                                    # Episodes per training trial
     batch_size = 64                                              # Batch size for experience replay
 
     # Initialize storage for results
