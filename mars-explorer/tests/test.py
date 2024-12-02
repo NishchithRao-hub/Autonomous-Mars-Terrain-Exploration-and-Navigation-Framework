@@ -54,11 +54,10 @@ if __name__ == "__main__":
 
     env = gym.make('mars_explorer:exploConf-v1', conf=conf)
     observation = env.reset()
-    for _ in range(20):
+    for _ in range(10):
         env.render()
         action = env.action_space.sample() # your agent here (this takes random actions)
         observation, reward, done, info = env.step(action)
-
         if done:
             observation = env.reset()
         time.sleep(0.3)
