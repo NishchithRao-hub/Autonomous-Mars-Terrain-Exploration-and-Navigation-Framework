@@ -13,11 +13,11 @@ conf["obstacle_size"] = [3,3]
 conf["viewer"]["night_color"] = (250,250,250)
 
 env = gym.make('mars_explorer:exploConf-v1', conf=conf)
-observation = env.reset()
+observation, info = env.reset()
 
 for step in range(10):
 
-    img = env.reset()
+    img, info = env.reset()
     rend = env.render()
     time.sleep(2)
 

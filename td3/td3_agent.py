@@ -187,19 +187,23 @@ class TD3Agent:
         train_rewards = []
         train_actor_loss = []
         train_critic_loss = []
+        train_steps = []
 
         """ Train the TD3 agent over several episodes """
         for episode in range(episodes):
-            state = self.reset_env()
+            state, info = self.reset_env()
             ep_reward = 0
             critic_loss = 0
             actor_loss = 0
+            steps_taken = 0
             done = False
+
 
             while not done:
                 # self.env.render() # Uncomment to render the environment during training
                 action, action_values = self.select_action(state)  # Get action and action values from actor
-                next_state, reward, done, info = self.step_env(action)  # Take step in environment
+                next_state, reward, done, truncated, info = self.step_env(action)  # Take step in environment
+                steps_taken += 1
 
                 self.replay_buffer.add(state, action, action_values, reward, next_state,
                                        done)  # Add experience to buffer
@@ -215,22 +219,23 @@ class TD3Agent:
             train_rewards.append(ep_reward)
             train_actor_loss.append(actor_loss)
             train_critic_loss.append(critic_loss)
+            train_steps.append(steps_taken)
 
         # Save the model after training
         self.save_model(model_path + "/td3_actor.pth", model_path + "/td3_critic_1.pth", model_path + "/td3_critic_2.pth")
-        return train_rewards, train_actor_loss, train_critic_loss
+        return train_rewards, train_actor_loss, train_critic_loss, train_steps
 
     def reset_env(self):
         # Reset the environment
         self.env = gym.make('mars_explorer:exploConf-v1', conf=conf)  # Initialize the environment
-        state = self.env.reset()  # Reset and get the initial state
-        return state
+        state, info = self.env.reset()  # Reset and get the initial state
+        return state, info
 
     def step_env(self, action):
         # Step the environment here (using your MarsExplorer environment)
-        next_state, reward, done, info = self.env.step(action)
+        next_state, reward, done, truncated, info = self.env.step(action)
         # Return the next state, reward, done, and info
-        return next_state, reward, done, info
+        return next_state, reward, done, truncated, info
 
     def save_model(self, actor_path, critic_1_path, critic_2_path):
         """

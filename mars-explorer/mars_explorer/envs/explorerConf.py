@@ -1,4 +1,5 @@
 import numpy as np
+import random
 import gym
 from mars_explorer.utils.randomMapGenerator import Generator
 from mars_explorer.utils.lidarSensor import Lidar
@@ -25,13 +26,20 @@ class ExplorerConf(gym.Env):
         self.observation_space = gym.spaces.Box(0., 1., (self.sizeX, self.sizeY, 1))
         self.viewerActive = False
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
         self.maxSteps = self.conf["max_steps"]
 
         # groundTruthMap --> 1.0 obstacle
         #                    0.3 free to move
         #                    0.0 unexplored
         #                    0.6 robot
+
+        if seed is not None:
+            random.seed(seed)
+            np.random.seed(seed)
+
+        self.maxSteps = self.conf["max_steps"]
+
         gen = Generator(self.conf)
         randomMap = gen.get_map().astype(np.double)
         randomMapOriginal = randomMap.copy()
@@ -69,6 +77,7 @@ class ExplorerConf(gym.Env):
         self.new_state = np.reshape(self.outputMap, (self.sizeX, self.sizeY, 1))
         self.reward = 0
         self.done = False
+        self.truncated = False
         self.timeStep = 0
 
         self.viewerActive = False
@@ -76,7 +85,7 @@ class ExplorerConf(gym.Env):
         self.collision = False
         self.action = 0
 
-        return self.new_state
+        return self.new_state, {}
 
     def action_space_sample(self):
         random = np.random.randint(4)
@@ -165,6 +174,7 @@ class ExplorerConf(gym.Env):
     def _checkDone(self):
         if self.timeStep > self.maxSteps:
             self.done = True
+            self.truncated = True
         elif np.count_nonzero(self.exploredMap) > 0.99 * (self.SIZE[0] * self.SIZE[1]):
             self.done = True
         elif self.collision:
@@ -185,7 +195,7 @@ class ExplorerConf(gym.Env):
         self._updateTrajectory()
 
         info = {}
-        return self.new_state, self.reward, self.done, info
+        return self.new_state, self.reward, self.done, self.truncated, info
 
     def close(self):
         if self.viewerActive:

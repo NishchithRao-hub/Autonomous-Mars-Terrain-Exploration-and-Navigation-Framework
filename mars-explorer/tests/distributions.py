@@ -104,13 +104,13 @@ def video_map(time=TIME_VIDEO):
 
 if not ONLY_VIDEO:
     env = gym.make('mars_explorer:exploConf-v1', conf=conf)
-    observation = env.reset()
+    observation, info = env.reset()
 
     terrain = np.zeros((21, 21))
 
     for step in range(FRAMES):
 
-        img = env.reset()
+        img, info = env.reset()
         rend = env.render()
 
         x, y = np.where(env.groundTruthMap == 1.0)

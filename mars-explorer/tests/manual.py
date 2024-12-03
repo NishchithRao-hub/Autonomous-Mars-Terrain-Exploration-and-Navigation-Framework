@@ -72,11 +72,11 @@ def event():
 
 def play_game(env):
     total_reward = .0
-    observation = env.reset()
+    observation, info = env.reset()
     env.render()
     for time_step in range(1000):
         action = event()
-        obs, reward, done, info = env.step(action)
+        obs, reward, done, truncated, info = env.step(action)
         total_reward += reward
         if done:
             break
