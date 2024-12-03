@@ -1,3 +1,4 @@
+import tqdm
 from td3_agent import TD3Agent
 import gym
 import matplotlib.pyplot as plt
@@ -81,8 +82,8 @@ if __name__ == "__main__":
     action_dim =env.action_space.n                               # 4 discrete actions (up, down, left, right)
 
     # Training parameters
-    num_trails = 15                                              # Number of trials
-    episodes_per_trail = 3000                                    # Episodes per training trial
+    num_trails = 3                                               # Number of trials
+    episodes_per_trail = 100                                     # Episodes per training trial
     batch_size = 64                                              # Batch size for experience replay
 
     # Initialize storage for results
@@ -93,26 +94,59 @@ if __name__ == "__main__":
     """ 
     Train the TD3 agent for multiple trials and collect performance data.
     """
-    for _ in range(num_trails):
-        agent = TD3Agent(state_dim, action_dim)
-        rewards, actor_losses, critic_losses = agent.train(episodes=episodes_per_trail, batch_size=batch_size)
+    tr_bar = tqdm.trange(num_trails)
+    for trial in tr_bar:
+        agent = TD3Agent(state_dim, action_dim, batch_size)
+        rewards, actor_losses, critic_losses = agent.train(episodes=episodes_per_trail)
 
         td3_returns.append(rewards)
         td3_actor_losses.append(actor_losses)
         td3_critic_losses.append(critic_losses)
 
+        tr_bar.set_description(
+            f" Average Reward: {sum(rewards)/len(rewards):.2f} | Average Critic Loss: {sum(critic_losses)/len(critic_losses):.2f} | "
+            f"Average Actor Loss: {sum(actor_losses)/len(actor_losses):.2f}"
+        )
+
     """ 
     Plot the average performance of the TD3 agent across training trials.
     """
     # Plot average returns
-    plot_curves([np.array(td3_returns)], ['TD3'], ['b'], 'Return', 'TD3 Returns', smoothing=True)
-    plt.savefig(os.path.join(plot_path, "td3_returns.png"))
+    plot_curves([np.array(td3_returns)], ['TD3'], ['g'], 'Return', 'TD3 Returns', smoothing=True)
+    filepath1 = os.path.join(plot_path, "td3_returns.png")
+
+    # Check if file exists
+    if os.path.exists(filepath1):
+        os.remove(filepath1)
+
+    # Save the figure
+    plt.savefig(filepath1)
     plt.close()
 
     # Plot average actor and critic losses
-    plot_curves([np.array(td3_actor_losses), np.array(td3_critic_losses)], ['TD3 Actor Loss', 'TD3 Critic Loss'],
-                ['g', 'r'], 'Loss', 'Actor & Critic Loss', smoothing=True)
-    plt.savefig(os.path.join(plot_path, "td3_losses.png"))
+    plot_curves([np.array(td3_critic_losses)], ['TD3 Critic Loss'],
+                ['b'], 'Loss', 'Critic Loss', smoothing=True)
+    filepath2 = os.path.join(plot_path, "td3_critic_loss.png")
+
+    # Check if file exists
+    if os.path.exists(filepath2):
+        os.remove(filepath2)
+
+    # Save the figure
+    plt.savefig(filepath2)
+    plt.close()
+
+    # Plot average actor and critic losses
+    plot_curves([np.array(td3_actor_losses)], ['TD3 Actor Loss'],
+                ['r'], 'Loss', 'Actor Loss', smoothing=True)
+    filepath3 = os.path.join(plot_path, "td3_actor_loss.png")
+
+    # Check if file exists
+    if os.path.exists(filepath3):
+        os.remove(filepath3)
+
+    # Save the figure
+    plt.savefig(filepath3)
     plt.close()
 
     env.close()
