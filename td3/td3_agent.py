@@ -1,5 +1,3 @@
-import time
-
 import gym
 import torch
 import torch.optim as optim
@@ -210,15 +208,13 @@ class TD3Agent:
                 critic_loss /= len(self.replay_buffer.buffer)
                 actor_loss /= len(self.replay_buffer.buffer)
 
-            # time.sleep(0.3)
-
             train_rewards.append(ep_reward)
             train_actor_loss.append(actor_loss)
             train_critic_loss.append(critic_loss)
 
             avg_reward = sum(train_rewards) / len(train_rewards)
             avg_actor_loss = sum(train_actor_loss) / len(train_actor_loss)
-            avg_critic_loss = sum(train_critic_loss) / len(train_critic_loss)
+            avg_critic_loss = sum(critic_loss) / len(critic_loss)
 
             ep_bar.set_description(
                 f"Episode: {episode} | Reward: {avg_reward:.2f} | Critic Loss: {avg_critic_loss:.2f} | "
