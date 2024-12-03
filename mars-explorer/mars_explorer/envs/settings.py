@@ -9,9 +9,8 @@ DEFAULT_CONFIG={
     # ======== ENVIRONMENT =======
     # configuration regarding the random map generation
     # absolute number of obstacles, randomly placed in env
-    "obstacles":12,
-    # if rows/columns activated the obstacles will be placed in a semi random
-    # spacing
+    "obstacles": 14,
+    # if rows/columns activated the obstacles will be placed in a semi random spacing
     "number_rows":None,
     "number_columns":None,
     # noise activated only when row/columns activated
@@ -21,11 +20,14 @@ DEFAULT_CONFIG={
     "margins":[1, 1],
     # obstacle size expressed in cell if rows/columns not activated
     "obstacle_size":[2,2],
-    # mas number of steps for the environment
-    "max_steps":400,
-    "bonus_reward":400,
-    "collision_reward":-400,
-    "out_of_bounds_reward":-400,
+    # max number of steps for the environment
+    "max_steps": 800,
+    "collision_reward":-500,
+    "out_of_bounds_reward":-500,
+    "99%_bonus_reward":400,
+    "25%_bonus_reward": 50,
+    "50%_bonus_reward": 100,
+    "75%_bonus_reward": 150,
 
     # ======== SENSORS | LIDAR =======
     "lidar_range":6,
