@@ -1,9 +1,10 @@
+import time
+
 import gym
 import torch
 import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
-import tqdm
 from replay_buffer import ReplayBuffer
 from actor_critic import Actor, Critic, TargetNetwork
 from mars_explorer.envs.settings import DEFAULT_CONFIG as conf
@@ -29,9 +30,10 @@ class TD3Agent:
         learning_rate (float, optional): Learning rate for the optimizers. Defaults to 1e-3.
     """
 
-    def __init__(self, state_dim, action_dim, hidden_size=128, gamma=0.99, tau=0.005, policy_noise=0.2,
-                 policy_freq=2, learning_rate=1e-3):
+    def __init__(self, state_dim, action_dim, batch_size=64, hidden_size=128, gamma=0.99, tau=0.01, policy_noise=0.2,
+                 policy_freq=2, learning_rate=1e-4):
         # Initialize the actor and critic networks
+        self.batch_size = batch_size
         self.actor = Actor(state_dim, action_dim, hidden_size)
         self.critic_1 = Critic(state_dim, action_dim, hidden_size)
         self.critic_2 = Critic(state_dim, action_dim, hidden_size)
@@ -53,7 +55,7 @@ class TD3Agent:
         self.policy_freq = policy_freq
 
         # Replay buffer
-        self.replay_buffer = ReplayBuffer(buffer_size=1000000, batch_size=64)
+        self.replay_buffer = ReplayBuffer(buffer_size=1000000, batch_size=self.batch_size)
 
         # For action noise
         self.action_dim = action_dim
@@ -61,6 +63,9 @@ class TD3Agent:
         # Tracking losses
         self.last_critic_loss = 0
         self.last_actor_loss = 0
+
+        # For tracking updates
+        self.timestep = 0
 
     def select_action(self, state):
         """
@@ -82,7 +87,10 @@ class TD3Agent:
        Update the actor and critic networks using the experiences from the replay buffer.
        """
         # Sample a batch of experiences from the replay buffer
-        state, action, action_values, reward, next_state, done = self.replay_buffer.sample()
+        if len(self.replay_buffer.buffer) >= self.batch_size:
+            state, action, action_values, reward, next_state, done = self.replay_buffer.sample()
+        else:
+            return
 
         # Convert to pytorch tensor
         state = torch.FloatTensor(state)
@@ -101,7 +109,10 @@ class TD3Agent:
         done = done.view(64, -1)
 
         # Update critic networks
-        next_action = self.actor_target.get_target()(next_state) + torch.randn_like(action) * self.policy_noise
+        noise = torch.randn_like(action) * self.policy_noise
+        noise = noise.clamp(-0.5, 0.5)
+        next_action = self.actor_target.get_target()(next_state) + noise
+        # next_action = self.actor_target.get_target()(next_state) + torch.randn_like(action) * self.policy_noise
 
         # Get the Q-value from the target critics
         target_q1 = self.critic_1_target.get_target()(next_state, next_action)
@@ -134,7 +145,7 @@ class TD3Agent:
         self.last_critic_loss = (critic_1_loss.item() + critic_2_loss.item()) / 2
 
         # Update the actor network every `policy_freq` iterations
-        if self.policy_freq == 0 or self.policy_freq % self.policy_freq == 0:
+        if self.timestep % self.policy_freq == 0:
             actor_loss = -self.critic_1(state, self.actor(state)).mean()
 
             self.actor_optimizer.zero_grad()
@@ -149,7 +160,9 @@ class TD3Agent:
             # Store the actor loss
             self.last_actor_loss = actor_loss.item()
 
-    def train(self, episodes, batch_size):
+        self.timestep += 1
+
+    def train(self, episodes):
         """
         Train the TD3 Agent over several episodes.
 
@@ -158,7 +171,6 @@ class TD3Agent:
 
         Args:
             episodes (int): Number of episodes to train the agent for.
-            batch_size (int): Batch size used for experience sampling during training updates.
 
         Returns:
             tuple: A tuple containing three lists:
@@ -177,44 +189,43 @@ class TD3Agent:
         train_rewards = []
         train_actor_loss = []
         train_critic_loss = []
+        train_steps = []
 
-        ep_bar = tqdm.trange(episodes)
         """ Train the TD3 agent over several episodes """
-        for episode in ep_bar:
-            state = self.reset_env()
+        for episode in range(episodes):
+            state, info = self.reset_env()
             ep_reward = 0
             critic_loss = 0
             actor_loss = 0
+            steps_taken = 0
             done = False
+
 
             while not done:
                 # self.env.render() # Uncomment to render the environment during training
-                action = self.select_action(state)[0]  # Get action from actor
-                action_values = self.select_action(state)[1]  # Get action values from actor
-                next_state, reward, done, info = self.step_env(action)  # Take step in environment
+                action, action_values = self.select_action(state)  # Get action and action values from actor
+                next_state, reward, done, truncated, info = self.step_env(action)  # Take step in environment
+                steps_taken += 1
 
                 self.replay_buffer.add(state, action, action_values, reward, next_state,
                                        done)  # Add experience to buffer
                 state = next_state  # Update state
 
-                if len(self.replay_buffer.buffer) >= batch_size:
+                if len(self.replay_buffer.buffer) >= self.batch_size:
                     self.update()  # Update the networks
 
+                ep_reward += reward
                 critic_loss += self.last_critic_loss
                 actor_loss += self.last_actor_loss
-                ep_reward += reward
-
-            if len(self.replay_buffer.buffer) >= batch_size:
-                critic_loss /= len(self.replay_buffer.buffer)
-                actor_loss /= len(self.replay_buffer.buffer)
 
             train_rewards.append(ep_reward)
             train_actor_loss.append(actor_loss)
             train_critic_loss.append(critic_loss)
+            train_steps.append(steps_taken)
 
             avg_reward = sum(train_rewards) / len(train_rewards)
             avg_actor_loss = sum(train_actor_loss) / len(train_actor_loss)
-            avg_critic_loss = sum(critic_loss) / len(critic_loss)
+            avg_critic_loss = sum(train_critic_loss) / len(train_critic_loss)
 
             ep_bar.set_description(
                 f"Episode: {episode} | Reward: {avg_reward:.2f} | Critic Loss: {avg_critic_loss:.2f} | "
@@ -223,19 +234,19 @@ class TD3Agent:
 
         # Save the model after training
         self.save_model(model_path + "/td3_actor.pth", model_path + "/td3_critic_1.pth", model_path + "/td3_critic_2.pth")
-        return train_rewards, train_actor_loss, train_critic_loss
+        return train_rewards, train_actor_loss, train_critic_loss, train_steps
 
     def reset_env(self):
         # Reset the environment
         self.env = gym.make('mars_explorer:exploConf-v1', conf=conf)  # Initialize the environment
-        state = self.env.reset()  # Reset and get the initial state
-        return state
+        state, info = self.env.reset()  # Reset and get the initial state
+        return state, info
 
     def step_env(self, action):
         # Step the environment here (using your MarsExplorer environment)
-        next_state, reward, done, info = self.env.step(action)
+        next_state, reward, done, truncated, info = self.env.step(action)
         # Return the next state, reward, done, and info
-        return next_state, reward, done, info
+        return next_state, reward, done, truncated, info
 
     def save_model(self, actor_path, critic_1_path, critic_2_path):
         """

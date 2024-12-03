@@ -51,11 +51,11 @@ def plotHeatMap(img):
     plt.close()
 
 env = gym.make('mars_explorer:exploConf-v1', conf=conf)
-observation = env.reset()
+observation, info = env.reset()
 
 for step in range(3):
 
-    img = env.reset()
+    img, info = env.reset()
     rend = env.render()
 
     if SAVE:
