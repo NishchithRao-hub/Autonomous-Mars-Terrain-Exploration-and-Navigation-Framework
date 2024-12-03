@@ -223,15 +223,6 @@ class TD3Agent:
             train_critic_loss.append(critic_loss)
             train_steps.append(steps_taken)
 
-            avg_reward = sum(train_rewards) / len(train_rewards)
-            avg_actor_loss = sum(train_actor_loss) / len(train_actor_loss)
-            avg_critic_loss = sum(train_critic_loss) / len(train_critic_loss)
-
-            ep_bar.set_description(
-                f"Episode: {episode} | Reward: {avg_reward:.2f} | Critic Loss: {avg_critic_loss:.2f} | "
-                f"Actor Loss: {avg_actor_loss:.2f}"
-            )
-
         # Save the model after training
         self.save_model(model_path + "/td3_actor.pth", model_path + "/td3_critic_1.pth", model_path + "/td3_critic_2.pth")
         return train_rewards, train_actor_loss, train_critic_loss, train_steps
