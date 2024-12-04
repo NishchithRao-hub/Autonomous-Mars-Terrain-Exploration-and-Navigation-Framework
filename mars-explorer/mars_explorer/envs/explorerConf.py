@@ -29,17 +29,14 @@ class ExplorerConf(gym.Env):
     def reset(self, seed=None, options=None):
         self.maxSteps = self.conf["max_steps"]
 
-        # groundTruthMap --> 1.0 obstacle
-        #                    0.3 free to move
-        #                    0.0 unexplored
-        #                    0.6 robot
-
         if seed is not None:
             random.seed(seed)
             np.random.seed(seed)
 
-        self.maxSteps = self.conf["max_steps"]
-
+        # groundTruthMap --> 1.0 obstacle
+        #                    0.3 free to move
+        #                    0.0 unexplored
+        #                    0.6 robot
         gen = Generator(self.conf)
         randomMap = gen.get_map().astype(np.double)
         randomMapOriginal = randomMap.copy()
@@ -79,7 +76,6 @@ class ExplorerConf(gym.Env):
         self.done = False
         self.truncated = False
         self.timeStep = 0
-
         self.viewerActive = False
         self.out_of_bounds = False
         self.collision = False
