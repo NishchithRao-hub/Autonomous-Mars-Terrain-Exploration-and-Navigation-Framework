@@ -69,7 +69,7 @@ if __name__ == "__main__":
                      "td3_actor_losses": td3_actor_losses,
                      "td3_critic_losses": td3_critic_losses,
                      "td3_steps": td3_steps,
-                     "td3_percentage area covered": td3_percentage_area_covered}, f)
+                     "td3_percentage_area_covered": td3_percentage_area_covered}, f)
     print(f"Results saved to {os.path.join(results_path, 'td3_results.pkl')}")
 
     env.close()

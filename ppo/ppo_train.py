@@ -70,7 +70,7 @@ if __name__ == "__main__":
             "ppo_returns": ppo_returns,
             "ppo_actor_losses": ppo_actor_losses,
             "ppo_steps": ppo_steps,
-            "ppo_percentage area covered": ppo_percentage_area_covered}, f)
+            "ppo_percentage_area_covered": ppo_percentage_area_covered}, f)
     print(f"Results saved to {os.path.join(results_path, 'ppo_results.pkl')}")
 
     env.close()

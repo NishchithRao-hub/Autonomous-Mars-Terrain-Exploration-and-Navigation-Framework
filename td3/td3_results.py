@@ -68,6 +68,7 @@ td3_returns = td3_results["td3_returns"]
 td3_actor_losses = td3_results["td3_actor_losses"]
 td3_critic_losses = td3_results["td3_critic_losses"]
 td3_steps = td3_results["td3_steps"]
+td3_percentage_area_covered = td3_results["td3_percentage_area_covered"]
 
 # Defining the path to store plots
 plot_path = os.path.join("plot_figs")
