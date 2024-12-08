@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
-from td3_result import plot_curves
+from td3_results import plot_curves
 
 
 # Defining the path to store plots
@@ -27,6 +27,10 @@ with open(os.path.join(results_path, "td3_results.pkl"), "rb") as f:
     td3_results = pickle.load(f)
 
 td3_returns = td3_results["td3_returns"]
+
+# Convert to numpy array and reshape
+dqn_returns = np.squeeze(np.array(dqn_returns))
+td3_returns = np.array(td3_returns)
 
 """
 Plot the average performance of the TD3 agent across training trials.

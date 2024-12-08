@@ -79,7 +79,7 @@ if not os.path.exists(plot_path):
 """
 Plot the average performance of the TD3 agent across training trials.
 """
-#--------------------- Plot average return for td3 vs dqn
+#--------------------- Plot average return for td3
 plot_curves([np.array(td3_returns)], ['TD3'], ['g'], 'Return', 'TD3 Returns', smoothing=True)
 filepath1 = os.path.join(plot_path, "td3_returns.png")
 

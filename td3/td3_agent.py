@@ -200,7 +200,6 @@ class TD3Agent:
             steps_taken = 0
             done = False
 
-
             while not done:
                 # self.env.render() # Uncomment to render the environment during training
                 action, action_values = self.select_action(state)  # Get action and action values from actor
@@ -223,9 +222,12 @@ class TD3Agent:
             train_critic_loss.append(critic_loss)
             train_steps.append(steps_taken)
 
+        # covered_area = self.env.get_covered_area()
+        proportion_covered = self.env.get_covered_proportion()
+
         # Save the model after training
         self.save_model(model_path + "/td3_actor.pth", model_path + "/td3_critic_1.pth", model_path + "/td3_critic_2.pth")
-        return train_rewards, train_actor_loss, train_critic_loss, train_steps
+        return train_rewards, train_actor_loss, train_critic_loss, train_steps, proportion_covered
 
     def reset_env(self):
         # Reset the environment

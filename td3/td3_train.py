@@ -38,6 +38,7 @@ if __name__ == "__main__":
     td3_actor_losses = []
     td3_critic_losses = []
     td3_steps = []
+    td3_percentage_area_covered = []
 
     results_path = os.path.join("training_results")
     if not os.path.exists(results_path):
@@ -49,24 +50,26 @@ if __name__ == "__main__":
     tr_bar = tqdm.trange(num_trails)
     for trial in tr_bar:
         agent = TD3Agent(state_dim, action_dim, batch_size)
-        rewards, actor_losses, critic_losses, steps  = agent.train(episodes=episodes_per_trail)
+        rewards, actor_losses, critic_losses, steps, proportion_covered = agent.train(episodes=episodes_per_trail)
 
         td3_returns.append(rewards)
         td3_actor_losses.append(actor_losses)
         td3_critic_losses.append(critic_losses)
         td3_steps.append(steps)
-
-        # Save results using pickle
-        with open(os.path.join(results_path, "td3_results.pkl"), "wb") as f:
-            pickle.dump({"td3_returns": td3_returns,
-                         "td3_actor_losses": td3_actor_losses,
-                         "td3_critic_losses": td3_critic_losses,
-                         "td3_steps": td3_steps}, f)
-        print(f"Results saved to {os.path.join(results_path, 'td3_results.pkl')}")
+        td3_percentage_area_covered.append(proportion_covered)
 
         tr_bar.set_description(
             f" Average Reward: {sum(rewards)/len(rewards):.2f} | Average Critic Loss: {sum(critic_losses)/len(critic_losses):.2f} | "
-            f"Average Actor Loss: {sum(actor_losses)/len(actor_losses):.2f}"
+            f"Average Actor Loss: {sum(actor_losses)/len(actor_losses):.2f} | Percentage Area Covered: {proportion_covered:.2%}"
         )
+
+    # Save results using pickle
+    with open(os.path.join(results_path, "td3_results.pkl"), "wb") as f:
+        pickle.dump({"td3_returns": td3_returns,
+                     "td3_actor_losses": td3_actor_losses,
+                     "td3_critic_losses": td3_critic_losses,
+                     "td3_steps": td3_steps,
+                     "td3_percentage area covered": td3_percentage_area_covered}, f)
+    print(f"Results saved to {os.path.join(results_path, 'td3_results.pkl')}")
 
     env.close()
