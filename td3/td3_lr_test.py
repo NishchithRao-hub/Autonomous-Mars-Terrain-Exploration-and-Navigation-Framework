@@ -36,7 +36,7 @@ if __name__ == "__main__":
     num_trials = 10                                              # Number of trials
     episodes_per_trail = 5000                                    # Episodes per training trial
     batch_size = 64                                              # Batch size for experience replay
-    learning_rates = [1e-4, 1e-3, 1e-2]
+    learning_rates = [1e-4, 1e-3, 1e-2, 3e-4]
 
     # Initialize storage for results
     td3_lr_returns = []
@@ -44,10 +44,10 @@ if __name__ == "__main__":
     """
     Train the TD3 agent for multiple trials and collect performance data.
     """
-    for aplha in learning_rates:
+    for alpha in learning_rates:
         tr_bar = tqdm.trange(num_trials)
         for trial in tr_bar:
-            agent = TD3Agent(state_dim, action_dim, batch_size, learning_rate=aplha)
+            agent = TD3Agent(state_dim, action_dim, batch_size, learning_rate=alpha)
             rewards, actor_losses, critic_losses, steps  = agent.train(episodes=episodes_per_trail)
 
             td3_lr_returns.append(rewards)
@@ -58,7 +58,7 @@ if __name__ == "__main__":
             print(f"Results saved to {os.path.join(results_path, 'td3_lr_results.pkl')}")
 
             tr_bar.set_description(
-                f" Average Reward for learning rate: {aplha} is {sum(rewards)/len(rewards):.2f}"
+                f" Average Reward for learning rate: {alpha} is {sum(rewards)/len(rewards):.2f}"
             )
 
     env.close()
