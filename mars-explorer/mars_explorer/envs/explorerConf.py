@@ -196,3 +196,12 @@ class ExplorerConf(gym.Env):
     def close(self):
         if self.viewerActive:
             self.viewer.quit()
+
+    def get_covered_area(self):
+        covered_area = np.count_nonzero(self.exploredMap)
+        return covered_area
+
+    def get_covered_proportion(self):
+        total_area = self.sizeX * self.sizeY
+        proportion_covered = np.count_nonzero(self.exploredMap) / total_area
+        return proportion_covered
