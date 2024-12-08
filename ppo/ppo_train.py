@@ -1,19 +1,18 @@
+import numpy as np
+import gym
 import os
 import tqdm
-import gym
-import numpy as np
 import pickle
-import torch
-from ppo_agent import PPOAgent
-from ppo_replay_buffer import PPOReplayBuffer
 from mars_explorer.envs.settings import DEFAULT_CONFIG as conf
+from policy_network import PolicyNetwork
+from ppo_agent import PPOAgent
 
 if __name__ == "__main__":
     """
-    Main script to train the PPO agent on the Mars Explorer environment.
+    Main script to train and evaluate the PPO agent on the Mars Explorer environment.
 
-    This script defines training parameters, initializes the environment and agent,
-    collects experience, trains the agent, and saves the results.
+    This script defines the training parameters, initializes the environment and agent,
+    runs multiple training trials, and saves the training results.
     """
 
     # Define directories for saving results
@@ -27,57 +26,51 @@ if __name__ == "__main__":
     state_dim = np.prod(env.observation_space.shape)  # Flattened state space
     action_dim = env.action_space.n  # Discrete action space (4 actions)
 
-    batch_size = 64
-    epochs = 10
-    num_episodes = 150
-    replay_buffer_size = 100000
-
-    # Initialize PPO agent and replay buffer
-    agent = PPOAgent(state_dim, action_dim)
-    replay_buffer = PPOReplayBuffer(replay_buffer_size, state_dim, action_dim)
+    # Training parameters
+    num_trials = 3
+    episodes_per_trial = 100
+    max_timesteps = conf["max_steps"]  # Max timesteps per episode
+    update_interval = 10  # Update policy after this many timesteps
 
     # Storage for results
-    rewards_per_episode = []
-    steps_per_episode = []
+    ppo_returns = []
+    ppo_actor_losses = []
+    ppo_steps = []
+    ppo_percentage_area_covered = []
 
-    # Training loop
-    pbar = tqdm.trange(num_episodes, desc="Training PPO")
-    for episode in pbar:
-        state = env.reset()
-        episode_reward = 0
-        episode_steps = 0
+    # Train the PPO agent for multiple trials
+    tr_bar = tqdm.trange(num_trials, desc="Training Trials")
+    for trial in tr_bar:
+        # Initialize the policy network and PPO agent
+        policy_network = PolicyNetwork(input_size=state_dim, action_space=action_dim)
+        agent = PPOAgent(policy_network, state_dim, action_dim)
 
-        while True:
-            action, log_prob, value = agent.select_action(state)
-            next_state, reward, done, _ = env.step(action)
+        # Train the agent and collect results
+        rewards, actor_losses, steps = agent.train(
+            env, num_episodes=episodes_per_trial, max_timesteps=max_timesteps, update_interval=update_interval
+        )
 
-            # Store transition in replay buffer
-            replay_buffer.store(state, action, log_prob, reward, done,value)
-            episode_reward += reward
-            episode_steps += 1
+        # covered_area = env.get_covered_area()
+        proportion_covered = env.get_covered_proportion()
 
-            state = next_state
+        ppo_returns.append(rewards)
+        ppo_actor_losses.append(actor_losses)
+        ppo_steps.append(steps)
+        ppo_percentage_area_covered.append(proportion_covered)
 
-            if done or episode_steps >= conf.max_steps:
-                # Finish trajectory and update PPO
-                last_value = 0 if done else agent.value_net(torch.tensor(next_state, dtype=torch.float32)).item()
-                replay_buffer.compute_advantages_and_returns(last_value)
+        # Update progress bar description
+        avg_reward = sum(rewards) / len(rewards)
+        avg_actor_loss = sum(actor_losses) / len(actor_losses)
+        tr_bar.set_description(f"Trial {trial+1} | Avg Reward: {avg_reward:.2f} | Avg Actor Loss: {avg_actor_loss:.2f}"
+                               f" | Percentage Area Covered: {proportion_covered:.2%}")
 
-                # Train the PPO agent using the replay buffer
-                agent.train(replay_buffer, epochs, batch_size)
-
-                # Log results
-                rewards_per_episode.append(episode_reward)
-                steps_per_episode.append(episode_steps)
-                break
-
-    # Save final results
+    # Save results using pickle
     with open(os.path.join(results_path, "ppo_results.pkl"), "wb") as f:
         pickle.dump({
-            "ppo_rewards": rewards_per_episode,
-            "ppo_steps": steps_per_episode,
-        }, f)
-
-    print(f"Training complete. Results saved in {results_path}.")
+            "ppo_returns": ppo_returns,
+            "ppo_actor_losses": ppo_actor_losses,
+            "ppo_steps": ppo_steps,
+            "ppo_percentage area covered": ppo_percentage_area_covered}, f)
+    print(f"Results saved to {os.path.join(results_path, 'ppo_results.pkl')}")
 
     env.close()
