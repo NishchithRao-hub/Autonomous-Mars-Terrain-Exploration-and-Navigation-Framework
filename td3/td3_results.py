@@ -68,6 +68,7 @@ td3_returns = td3_results["td3_returns"]
 td3_actor_losses = td3_results["td3_actor_losses"]
 td3_critic_losses = td3_results["td3_critic_losses"]
 td3_steps = td3_results["td3_steps"]
+td3_percentage_area_covered = td3_results["td3_percentage_area_covered"]
 
 # Defining the path to store plots
 plot_path = os.path.join("plot_figs")
@@ -79,7 +80,7 @@ if not os.path.exists(plot_path):
 """
 Plot the average performance of the TD3 agent across training trials.
 """
-#--------------------- Plot average return for td3 vs dqn
+#--------------------- Plot average return for td3
 plot_curves([np.array(td3_returns)], ['TD3'], ['g'], 'Return', 'TD3 Returns', smoothing=True)
 filepath1 = os.path.join(plot_path, "td3_returns.png")
 
