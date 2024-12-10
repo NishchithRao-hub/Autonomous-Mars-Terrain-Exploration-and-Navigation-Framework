@@ -1,5 +1,5 @@
 import pygame as pg
-import numpy as np
+
 
 class Drone(pg.sprite.Sprite):
     def __init__(self, viewer, env):
@@ -24,6 +24,7 @@ class Drone(pg.sprite.Sprite):
             self.image = pg.transform.rotate(self.viewer.drone_img, 0)
         elif self.env.action == 3:
             self.image = pg.transform.rotate(self.viewer.drone_img, 180)
+
 
 class Obstacle(pg.sprite.Sprite):
     def __init__(self, viewer, x, y):
