@@ -2,10 +2,11 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
 
-def moving_average(data, *, window_size = 50):
+def moving_average(data, *, window_size=50):
     """Smooths 1-D data array using a moving average.
     Args:
         data: 1-D numpy.array
@@ -21,7 +22,8 @@ def moving_average(data, *, window_size = 50):
     )
     return smooth_data[: -window_size + 1]
 
-def plot_curves(arr_list, legend_list, color_list, ylabel, fig_title, smoothing = True):
+
+def plot_curves(arr_list, legend_list, color_list, ylabel, fig_title, smoothing=True):
     """
     Args:
         arr_list (list): List of results arrays to plot
@@ -58,6 +60,7 @@ def plot_curves(arr_list, legend_list, color_list, ylabel, fig_title, smoothing 
     ax.set_title(f"{fig_title}")
     ax.legend(handles=h_list)
 
+
 results_path = os.path.join("training_results")
 
 # Load results
@@ -80,7 +83,7 @@ if not os.path.exists(plot_path):
 """
 Plot the average performance of the TD3 agent across training trials.
 """
-#--------------------- Plot average return for td3
+# --------------------- Plot average return for td3
 plot_curves([np.array(td3_returns)], ['TD3'], ['g'], 'Return', 'TD3 Returns', smoothing=True)
 filepath1 = os.path.join(plot_path, "td3_returns.png")
 
@@ -92,9 +95,9 @@ if os.path.exists(filepath1):
 plt.savefig(filepath1)
 plt.close()
 
-#--------------------- Plot average critic loss
+# --------------------- Plot average critic loss
 plot_curves([np.array(td3_critic_losses)], ['TD3 Critic Loss'],
-            ['b'], 'Loss', 'Critic Loss', smoothing=True)
+            ['b'], 'Loss', 'TD3 Critic Loss', smoothing=True)
 filepath2 = os.path.join(plot_path, "td3_critic_loss.png")
 
 # Check if file exists
@@ -105,9 +108,9 @@ if os.path.exists(filepath2):
 plt.savefig(filepath2)
 plt.close()
 
-#--------------------- Plot average actor loss
+# --------------------- Plot average actor loss
 plot_curves([np.array(td3_actor_losses)], ['TD3 Actor Loss'],
-            ['r'], 'Loss', 'Actor Loss', smoothing=True)
+            ['r'], 'Loss', 'TD3 Actor Loss', smoothing=True)
 filepath3 = os.path.join(plot_path, "td3_actor_loss.png")
 
 # Check if file exists
@@ -118,7 +121,7 @@ if os.path.exists(filepath3):
 plt.savefig(filepath3)
 plt.close()
 
-#--------------------- Plot average steps for each trial
+# --------------------- Plot average steps for each trial
 plot_curves([np.array(td3_steps)], ['Steps'],
             ['k'], 'Steps taken', 'TD3 Steps', smoothing=True)
 filepath4 = os.path.join(plot_path, "td3_steps.png")

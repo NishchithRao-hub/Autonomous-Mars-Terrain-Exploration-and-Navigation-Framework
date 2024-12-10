@@ -1,6 +1,7 @@
 import numpy as np
 import random
 
+
 class ReplayBuffer:
     """
     Replay Buffer for storing and sampling experience tuples.

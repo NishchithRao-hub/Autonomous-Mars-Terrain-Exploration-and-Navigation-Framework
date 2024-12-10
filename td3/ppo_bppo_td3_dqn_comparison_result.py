@@ -2,9 +2,7 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-# os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 from td3_results import plot_curves
-
 
 # Defining the path to store plots
 plot_path = os.path.join("plot_figs")
@@ -25,7 +23,6 @@ with open(os.path.join(results_path, "td3_results.pkl"), "rb") as f:
     td3_results = pickle.load(f)
 td3_returns = td3_results["td3_returns"]
 
-
 # Load results
 with open(os.path.join(results_path, "baseline_ppo_results.pkl"), "rb") as f:
     ppo_results = pickle.load(f)
@@ -36,18 +33,16 @@ with open(os.path.join(results_path, "ppo_results.pkl"), "rb") as f:
     ppo_results = pickle.load(f)
 ppo_returns = ppo_results["ppo_returns"]
 
-
 # Convert to numpy array and reshape
 dqn_returns = np.squeeze(np.array(dqn_returns))
 baseline_ppo_returns = np.squeeze(np.array(baseline_ppo_returns))
 td3_returns = np.array(td3_returns)
 ppo_returns = np.array(ppo_returns)
 
-
 """
-Plot the average performance of the TD3 agent across training trials.
+Plot the average performance of all the agent across training trials.
 """
-#--------------------- Plot average return for td3 vs dqn
+# --------------------- Plot average return for td3, baseline dqn, baseline ppo and ppo
 plot_curves([np.array(td3_returns), np.array(dqn_returns), np.array(baseline_ppo_returns), np.array(ppo_returns)],
             ['TD3', 'Baseline DQN', 'Baseline PPO', 'PPO'], ['blue', 'yellow', 'green', 'purple'], 'Return',
             'TD3-Baseline DQN-Baseline PPO-PPO Returns Comparison', smoothing=True)

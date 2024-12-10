@@ -6,8 +6,8 @@ import numpy as np
 from mars_explorer.envs.settings import DEFAULT_CONFIG as conf
 import os
 import matplotlib.pyplot as plt
-os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
 if __name__ == "__main__":
     """
@@ -28,14 +28,14 @@ if __name__ == "__main__":
         os.makedirs(results_path)
 
     # Initialize the environment
-    env = gym.make('mars_explorer:exploConf-v1', conf=conf)   # Initialize the environment
-    state_dim = np.prod(env.observation_space.shape)             # Flattened state space (21x21 grid)
-    action_dim =env.action_space.n                               # 4 discrete actions (up, down, left, right)
+    env = gym.make('mars_explorer:exploConf-v1', conf=conf)  # Initialize the environment
+    state_dim = np.prod(env.observation_space.shape)  # Flattened state space (21x21 grid)
+    action_dim = env.action_space.n  # 4 discrete actions (up, down, left, right)
 
     # Training parameters
-    num_trials = 10                                              # Number of trials
-    episodes_per_trail = 5000                                    # Episodes per training trial
-    batch_size = 64                                              # Batch size for experience replay
+    num_trials = 10  # Number of trials
+    episodes_per_trail = 5000  # Episodes per training trial
+    batch_size = 64  # Batch size for experience replay
     learning_rates = [1e-4, 1e-3, 1e-2, 3e-4]
 
     # Initialize storage for results
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         tr_bar = tqdm.trange(num_trials)
         for trial in tr_bar:
             agent = TD3Agent(state_dim, action_dim, batch_size, learning_rate=alpha)
-            rewards, actor_losses, critic_losses, steps  = agent.train(episodes=episodes_per_trail)
+            rewards, actor_losses, critic_losses, steps, area_covered = agent.train(episodes=episodes_per_trail)
 
             td3_lr_returns.append(rewards)
 
@@ -58,7 +58,7 @@ if __name__ == "__main__":
             print(f"Results saved to {os.path.join(results_path, 'td3_lr_results.pkl')}")
 
             tr_bar.set_description(
-                f" Average Reward for learning rate: {alpha} is {sum(rewards)/len(rewards):.2f}"
+                f" Average Reward for learning rate: {alpha} is {sum(rewards) / len(rewards):.2f}"
             )
 
     env.close()
