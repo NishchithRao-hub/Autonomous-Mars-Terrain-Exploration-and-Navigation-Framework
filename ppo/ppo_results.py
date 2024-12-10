@@ -2,10 +2,11 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
 
-def moving_average(data, *, window_size = 50):
+def moving_average(data, *, window_size=50):
     """Smooths 1-D data array using a moving average.
     Args:
         data: 1-D numpy.array
@@ -21,7 +22,8 @@ def moving_average(data, *, window_size = 50):
     )
     return smooth_data[: -window_size + 1]
 
-def plot_curves(arr_list, legend_list, color_list, ylabel, fig_title, smoothing = True):
+
+def plot_curves(arr_list, legend_list, color_list, ylabel, fig_title, smoothing=True):
     """
     Args:
         arr_list (list): List of results arrays to plot
@@ -58,6 +60,7 @@ def plot_curves(arr_list, legend_list, color_list, ylabel, fig_title, smoothing 
     ax.set_title(f"{fig_title}")
     ax.legend(handles=h_list)
 
+
 results_path = os.path.join("training_results")
 
 # Load results
@@ -78,7 +81,7 @@ if not os.path.exists(plot_path):
 """
 Plot the average performance of the PPO agent across training trials.
 """
-#--------------------- Plot average return for ppo
+# --------------------- Plot average return for ppo
 plot_curves([np.array(ppo_returns)], ['PPO'], ['g'], 'Return', 'PPO Returns', smoothing=True)
 filepath1 = os.path.join(plot_path, "ppo_returns.png")
 
@@ -90,9 +93,9 @@ if os.path.exists(filepath1):
 plt.savefig(filepath1)
 plt.close()
 
-#--------------------- Plot average actor loss
+# --------------------- Plot average actor loss
 plot_curves([np.array(ppo_actor_losses)], ['PPO Actor Loss'],
-            ['r'], 'Loss', 'Actor Loss', smoothing=True)
+            ['r'], 'Loss', 'PPO Actor Loss', smoothing=True)
 filepath3 = os.path.join(plot_path, "ppo_actor_loss.png")
 
 # Check if file exists
@@ -103,7 +106,7 @@ if os.path.exists(filepath3):
 plt.savefig(filepath3)
 plt.close()
 
-#--------------------- Plot average steps for each trial
+# --------------------- Plot average steps for each trial
 plot_curves([np.array(ppo_steps)], ['Steps'],
             ['k'], 'Steps taken', 'PPO Steps', smoothing=True)
 filepath4 = os.path.join(plot_path, "ppo_steps.png")

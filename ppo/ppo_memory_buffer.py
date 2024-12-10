@@ -1,9 +1,11 @@
 import numpy as np
 
+
 class MemoryBuffer:
     """
     Memory buffer for storing and preparing trajectories for PPO updates.
     """
+
     def __init__(self):
         self.states = []
         self.actions = []

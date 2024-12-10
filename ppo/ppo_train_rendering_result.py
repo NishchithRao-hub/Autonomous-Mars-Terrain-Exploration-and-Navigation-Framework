@@ -1,25 +1,11 @@
 import numpy as np
 import gym
-import os
 import tqdm
-import pickle
 from mars_explorer.envs.settings import DEFAULT_CONFIG as conf
 from policy_network import PolicyNetwork
 from ppo_agent import PPOAgent
 
 if __name__ == "__main__":
-    """
-    Main script to train and evaluate the PPO agent on the Mars Explorer environment.
-
-    This script defines the training parameters, initializes the environment and agent,
-    runs multiple training trials, and saves the training results.
-    """
-
-    # Define directories for saving results
-    results_path = "training_results"
-    plot_path = "plot_figs"
-    os.makedirs(results_path, exist_ok=True)
-    os.makedirs(plot_path, exist_ok=True)
 
     # Environment parameters
     env = gym.make('mars_explorer:exploConf-v1', conf=conf)
@@ -27,15 +13,14 @@ if __name__ == "__main__":
     action_dim = env.action_space.n  # Discrete action space (4 actions)
 
     # Training parameters
-    num_trials = 10
-    episodes_per_trial = 5000
+    num_trials = 3
+    episodes_per_trial = 100
     max_timesteps = conf["max_steps"]  # Max timesteps per episode
     update_interval = 10  # Update policy after this many timesteps
 
     # Storage for results
     ppo_returns = []
     ppo_actor_losses = []
-    ppo_steps = []
     ppo_percentage_area_covered = []
 
     # Train the PPO agent for multiple trials
@@ -55,7 +40,6 @@ if __name__ == "__main__":
 
         ppo_returns.append(rewards)
         ppo_actor_losses.append(actor_losses)
-        ppo_steps.append(steps)
         ppo_percentage_area_covered.append(proportion_covered)
 
         # Update progress bar description
@@ -64,14 +48,5 @@ if __name__ == "__main__":
         tr_bar.set_description(
             f"Trial {trial + 1} | Avg Reward: {avg_reward:.2f} | Avg Actor Loss: {avg_actor_loss:.2f}"
             f" | Percentage Area Covered: {proportion_covered:.2%}")
-
-    # Save results using pickle
-    with open(os.path.join(results_path, "ppo_results.pkl"), "wb") as f:
-        pickle.dump({
-            "ppo_returns": ppo_returns,
-            "ppo_actor_losses": ppo_actor_losses,
-            "ppo_steps": ppo_steps,
-            "ppo_percentage_area_covered": ppo_percentage_area_covered}, f)
-    print(f"Results saved to {os.path.join(results_path, 'ppo_results.pkl')}")
 
     env.close()

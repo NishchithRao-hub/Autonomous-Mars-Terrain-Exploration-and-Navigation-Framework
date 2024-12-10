@@ -1,15 +1,17 @@
 import os
-
 import torch
 import torch.optim as optim
 import numpy as np
 from ppo_memory_buffer import MemoryBuffer
 import torch.nn.functional as F
+import time
+
 
 class PPOAgent:
     """
     Proximal Policy Optimization (PPO) agent for training on the MarsExplorer environment.
     """
+
     def __init__(self, policy_network, state_space, action_space, lr=3e-4, gamma=0.99, eps_clip=0.2, gae_lambda=0.95):
         self.policy_network = policy_network
         self.optimizer = optim.Adam(self.policy_network.parameters(), lr=lr)
@@ -44,31 +46,31 @@ class PPOAgent:
         return action.item(), action_probs[0, action.item()].item(), value.item()
 
     def compute_gae(self, rewards, values, dones):
-            """
-            Compute Generalized Advantage Estimation (GAE).
+        """
+        Compute Generalized Advantage Estimation (GAE).
 
-            Args:
-                rewards (list): List of rewards collected during an episode.
-                values (list): List of state values from the critic.
-                dones (list): List of done flags indicating episode termination.
-            Returns:
-                advantages (np.ndarray): Computed advantages.
-                returns (np.ndarray): Discounted returns.
-            """
-            advantages = np.zeros_like(rewards, dtype=np.float32)
-            returns = np.zeros_like(rewards, dtype=np.float32)
+        Args:
+            rewards (list): List of rewards collected during an episode.
+            values (list): List of state values from the critic.
+            dones (list): List of done flags indicating episode termination.
+        Returns:
+            advantages (np.ndarray): Computed advantages.
+            returns (np.ndarray): Discounted returns.
+        """
+        advantages = np.zeros_like(rewards, dtype=np.float32)
+        returns = np.zeros_like(rewards, dtype=np.float32)
 
-            gae = 0
-            for t in reversed(range(len(rewards))):
-                # Handle next_value to avoid out-of-bounds access
-                next_value = 0 if (t == len(rewards) - 1 or dones[t]) else values[t + 1]
+        gae = 0
+        for t in reversed(range(len(rewards))):
+            # Handle next_value to avoid out-of-bounds access
+            next_value = 0 if (t == len(rewards) - 1 or dones[t]) else values[t + 1]
 
-                delta = rewards[t] + self.gamma * next_value * (1 - dones[t]) - values[t]
-                gae = delta + self.gamma * self.gae_lambda * gae * (1 - dones[t])
-                advantages[t] = gae
-                returns[t] = advantages[t] + values[t]
+            delta = rewards[t] + self.gamma * next_value * (1 - dones[t]) - values[t]
+            gae = delta + self.gamma * self.gae_lambda * gae * (1 - dones[t])
+            advantages[t] = gae
+            returns[t] = advantages[t] + values[t]
 
-            return advantages, returns
+        return advantages, returns
 
     def update_policy(self, trajectories):
         """
@@ -77,7 +79,8 @@ class PPOAgent:
         Args:
             trajectories (dict): A dictionary containing states, actions, rewards, etc.
         """
-        states = torch.tensor(trajectories['states'], dtype=torch.float32, device=self.device).view(-1,  self.state_space)
+        states = torch.tensor(trajectories['states'], dtype=torch.float32, device=self.device).view(-1,
+                                                                                                    self.state_space)
         actions = torch.tensor(trajectories['actions'], dtype=torch.int64, device=self.device)
         old_log_probs = torch.tensor(trajectories['log_probs'], dtype=torch.float32, device=self.device)
         advantages = torch.tensor(trajectories['advantages'], dtype=torch.float32, device=self.device)
@@ -121,7 +124,6 @@ class PPOAgent:
             critic_losses.append(critic_loss.item())
 
         return actor_losses, critic_losses
-
 
     def train(self, env, num_episodes, max_timesteps, update_interval=10):
         """
@@ -177,6 +179,8 @@ class PPOAgent:
                     actor_losses, critic_losses = self.update_policy(trajectories)
                     episode_actor_losses.extend(actor_losses)
                     memory.clear()
+
+                # time.sleep(0.2)
 
             rewards_list.append(episode_rewards)
             steps_list.append(timestep)
