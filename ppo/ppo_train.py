@@ -27,8 +27,8 @@ if __name__ == "__main__":
     action_dim = env.action_space.n  # Discrete action space (4 actions)
 
     # Training parameters
-    num_trials = 3
-    episodes_per_trial = 100
+    num_trials = 10
+    episodes_per_trial = 5000
     max_timesteps = conf["max_steps"]  # Max timesteps per episode
     update_interval = 10  # Update policy after this many timesteps
 
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     for trial in tr_bar:
         # Initialize the policy network and PPO agent
         policy_network = PolicyNetwork(input_size=state_dim, action_space=action_dim)
-        agent = PPOAgent(policy_network, state_dim, action_dim)
+        agent = PPOAgent(policy_network, state_dim, action_dim, lr=3e-4)
 
         # Train the agent and collect results
         rewards, actor_losses, steps = agent.train(
@@ -61,8 +61,9 @@ if __name__ == "__main__":
         # Update progress bar description
         avg_reward = sum(rewards) / len(rewards)
         avg_actor_loss = sum(actor_losses) / len(actor_losses)
-        tr_bar.set_description(f"Trial {trial+1} | Avg Reward: {avg_reward:.2f} | Avg Actor Loss: {avg_actor_loss:.2f}"
-                               f" | Percentage Area Covered: {proportion_covered:.2%}")
+        tr_bar.set_description(
+            f"Trial {trial + 1} | Avg Reward: {avg_reward:.2f} | Avg Actor Loss: {avg_actor_loss:.2f}"
+            f" | Percentage Area Covered: {proportion_covered:.2%}")
 
     # Save results using pickle
     with open(os.path.join(results_path, "ppo_results.pkl"), "wb") as f:

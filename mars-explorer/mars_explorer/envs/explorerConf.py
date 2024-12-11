@@ -70,7 +70,6 @@ class ExplorerConf(gym.Env):
 
         self.outputMap = self.exploredMap.copy()
         self.outputMap[self.x, self.y] = 0.6
-
         self.new_state = np.reshape(self.outputMap, (self.sizeX, self.sizeY, 1))
         self.reward = 0
         self.done = False
@@ -91,7 +90,6 @@ class ExplorerConf(gym.Env):
         if not self.viewerActive:
             self.viewer = Viewer(self, self.conf["viewer"])
             self.viewerActive = True
-
         self.viewer.run()
         return np.swapaxes(self.viewer.get_display_as_array(), 0, 1)
 
@@ -108,7 +106,6 @@ class ExplorerConf(gym.Env):
     def _move(self, x, y):
         canditateX = self.x + x
         canditateY = self.y + y
-
         in_x_axis = canditateX >= 0 and canditateX <= (self.sizeX - 1)
         in_y_axis = canditateY >= 0 and canditateY <= (self.sizeY - 1)
         in_obstacles = [canditateX, canditateY] in self.obstacles_idx
@@ -117,8 +114,7 @@ class ExplorerConf(gym.Env):
             self.x += x
             self.y += y
         elif not in_x_axis or not in_y_axis:
-            # out of bounds move, episode terminated with punishment (negative
-            # reward)
+            # out of bounds move, episode terminated with punishment (negative reward)
             self.out_of_bounds = True
         elif in_obstacles:
             # collision with obstacle, punishment (negative reward)
@@ -141,7 +137,6 @@ class ExplorerConf(gym.Env):
         self._choice(action)
         self._activateLidar()
         self._updateMaps()
-
         self.outputMap = self.exploredMap.copy()
         self.outputMap[self.x, self.y] = 0.6
         self.new_state = np.reshape(self.outputMap, (self.sizeX, self.sizeY, 1))
@@ -151,7 +146,6 @@ class ExplorerConf(gym.Env):
         pastExploredCells = np.count_nonzero(self.pastExploredMap)
         currentExploredCells = np.count_nonzero(self.exploredMap)
 
-        # TODO: add fixed cost for moving (-0.5 per move)
         self.reward = currentExploredCells - pastExploredCells - self.movementCost
 
         if np.count_nonzero(self.exploredMap) > 0.25 * (self.SIZE[0] * self.SIZE[1]):

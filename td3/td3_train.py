@@ -5,8 +5,8 @@ import gym
 import numpy as np
 from mars_explorer.envs.settings import DEFAULT_CONFIG as conf
 import os
-os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
 if __name__ == "__main__":
     """
@@ -24,14 +24,14 @@ if __name__ == "__main__":
         os.makedirs(plot_path)
 
     # Initialize the environment
-    env = gym.make('mars_explorer:exploConf-v1', conf=conf)   # Initialize the environment
-    state_dim = np.prod(env.observation_space.shape)             # Flattened state space (21x21 grid)
-    action_dim =env.action_space.n                               # 4 discrete actions (up, down, left, right)
+    env = gym.make('mars_explorer:exploConf-v1', conf=conf)  # Initialize the environment
+    state_dim = np.prod(env.observation_space.shape)  # Flattened state space (21x21 grid)
+    action_dim = env.action_space.n  # 4 discrete actions (up, down, left, right)
 
     # Training parameters
-    num_trails = 10                                              # Number of trials
-    episodes_per_trail = 5000                                    # Episodes per training trial
-    batch_size = 64                                              # Batch size for experience replay
+    num_trails = 10  # Number of trials
+    episodes_per_trail = 5000  # Episodes per training trial
+    batch_size = 64  # Batch size for experience replay
 
     # Initialize storage for results
     td3_returns = []
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     """
     tr_bar = tqdm.trange(num_trails)
     for trial in tr_bar:
-        agent = TD3Agent(state_dim, action_dim, batch_size)
+        agent = TD3Agent(state_dim, action_dim, batch_size, learning_rate=1e-2)
         rewards, actor_losses, critic_losses, steps, proportion_covered = agent.train(episodes=episodes_per_trail)
 
         td3_returns.append(rewards)
@@ -59,8 +59,8 @@ if __name__ == "__main__":
         td3_percentage_area_covered.append(proportion_covered)
 
         tr_bar.set_description(
-            f" Average Reward: {sum(rewards)/len(rewards):.2f} | Average Critic Loss: {sum(critic_losses)/len(critic_losses):.2f} | "
-            f"Average Actor Loss: {sum(actor_losses)/len(actor_losses):.2f} | Percentage Area Covered: {proportion_covered:.2%}"
+            f" Average Reward: {sum(rewards) / len(rewards):.2f} | Average Critic Loss: {sum(critic_losses) / len(critic_losses):.2f} | "
+            f"Average Actor Loss: {sum(actor_losses) / len(actor_losses):.2f} | Percentage Area Covered: {proportion_covered:.2%}"
         )
 
     # Save results using pickle

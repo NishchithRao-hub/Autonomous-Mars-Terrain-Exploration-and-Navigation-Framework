@@ -55,7 +55,7 @@ if __name__ == "__main__":
     Train the PPO agent for multiple trials and collect performance data.
     """
     tr_bar = tqdm.trange(num_trials, desc="Training Stable Baselines3 PPO")
-    max_steps = conf.get('max_steps', 400)  # Use a default if not set
+    max_steps = conf.get('max_steps', 800)  # Use a default if not set
 
     for trial in tr_bar:
         stable_ppo_agent.learn(total_timesteps=episodes_per_trial * max_steps)

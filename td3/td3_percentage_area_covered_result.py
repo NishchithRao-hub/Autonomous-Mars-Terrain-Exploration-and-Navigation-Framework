@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
+
 def plot_percentage_area_covered(data, ylabel, xlabel, fig_title, save_path):
     """
     Plots percentage area covered with trial numbers on the x-axis, y-axis scaled from 0 to 100,
@@ -58,11 +59,10 @@ if not os.path.exists(plot_path):
     os.makedirs(plot_path)
 area_covered_path = os.path.join(plot_path, "td3_percentage_area_covered.png")
 
-
 # Plot
 plot_percentage_area_covered(
     data=td3_percentage_area_covered_scaled,
     ylabel="Percentage Area Covered",
     xlabel="Trial Number",
-    fig_title="Percentage Area Covered Per Trial",
+    fig_title="TD3 Percentage Area Covered Per Trial",
     save_path=area_covered_path)

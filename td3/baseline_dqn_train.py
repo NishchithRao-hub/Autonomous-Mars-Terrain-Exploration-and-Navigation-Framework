@@ -27,8 +27,8 @@ if __name__ == "__main__":
     action_dim = env.action_space.n  # 4 discrete actions (up, down, left, right)
 
     # Training parameters
-    num_trails = 3  # Number of trials
-    episodes_per_trail = 100  # Episodes per training trial
+    num_trails = 10  # Number of trials
+    episodes_per_trail = 5000  # Episodes per training trial
 
     # Initialize storage for results
     baseline_dqn_returns = []
@@ -44,12 +44,12 @@ if __name__ == "__main__":
         "MlpPolicy",  # Use a Multi-Layer Perceptron policy
         stable_env,
         verbose=1,
-        learning_rate=1e-3,
+        learning_rate=1e-2,
         buffer_size=50000,  # Size of the replay buffer
         batch_size=64,  # Batch size for sampling from the replay buffer
         exploration_fraction=0.1,  # Fraction of training steps for epsilon-greedy exploration
         exploration_final_eps=0.02,  # Final value of epsilon for exploration
-        target_update_interval=500,  # Frequency of target network updates
+        target_update_interval=10,  # Frequency of target network updates
         train_freq=(1, "step"),  # Train the model every step
         gamma=0.99  # Discount factor
     )
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     Train the DQN agent for multiple trials and collect performance data.
     """
     tr_bar = tqdm.trange(num_trails, desc="Training Stable Baselines3 DQN")
-    max_steps = conf.get('max_steps', 400)  # Use a default if not set
+    max_steps = conf.get('max_steps', 800)  # Use a default if not set
 
     for trial in tr_bar:
         stable_dqn_agent.learn(total_timesteps=episodes_per_trail)

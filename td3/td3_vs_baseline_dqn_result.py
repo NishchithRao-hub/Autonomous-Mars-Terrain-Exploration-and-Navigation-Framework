@@ -2,9 +2,9 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 from td3_results import plot_curves
-
 
 # Defining the path to store plots
 plot_path = os.path.join("plot_figs")
@@ -21,7 +21,6 @@ with open(os.path.join(results_path, "baseline_dqn_results.pkl"), "rb") as f:
 
 dqn_returns = dqn_results["baseline_dqn_returns"]
 
-
 # Load results
 with open(os.path.join(results_path, "td3_results.pkl"), "rb") as f:
     td3_results = pickle.load(f)
@@ -35,8 +34,9 @@ td3_returns = np.array(td3_returns)
 """
 Plot the average performance of the TD3 agent across training trials.
 """
-#--------------------- Plot average return for td3 vs dqn
-plot_curves([np.array(td3_returns), np.array(dqn_returns)], ['TD3', 'DQN'], ['b', 'r'], 'Return', 'TD3 vs DQN Returns', smoothing=True)
+# --------------------- Plot average return for td3 vs dqn
+plot_curves([np.array(td3_returns), np.array(dqn_returns)], ['TD3', 'DQN'], ['b', 'r'], 'Return', 'TD3 vs DQN Returns',
+            smoothing=True)
 filepath1 = os.path.join(plot_path, "td3_vs_dqn_returns.png")
 
 # Check if file exists
