@@ -2,25 +2,36 @@
 
 Efficient autonomous exploration of uncharted terrains, such as the Martian surface, presents significant challenges in robotics and artificial intelligence. This project addresses the task of navigation and mapping in Mars-like environments by leveraging Deep Reinforcement Learning (DRL). Specifically, it explores and evaluates the performance of Twin Delayed Deep Deterministic Policy Gradient (TD3) and Proximal Policy Optimization (PPO) algorithms within the simulated MarsExplorer environment. The findings demonstrate enhanced terrain exploration, effective obstacle avoidance, and high coverage rates under defined constraints.
 
+## Project Reqirements
+```
+python version <= 3.10
+```
+
 ## Installation
 
 You can install MarsExplorer environment by using the following commands:
 
 1. Clone the repository.
 ```shell
-$ git clone https://github.com/GouriRajesh/Reinforcement-Learning-Based-Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework.git
+git clone https://github.com/GouriRajesh/Reinforcement-Learning-Based-Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework.git
 ```
-2. Install the package.
+2. Move into the project root directory.
 ```shell
-$ pip install -e mars-explorer
+cd Reinforcement-Learning-Based-Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework
 ```
-3. Install the dependencies.
+3. Install the package.
 ```shell
-For mac users:
-$ sh setup.sh
+pip install -e mars-explorer
+```
+4. Install the dependencies.
 
+For mac users:
+```shell
+sh setup.sh
+```
 For Windows users:
-$ bash setup.sh
+```shell
+bash setup.sh
 ```
 ## Dependancies
 
@@ -33,7 +44,7 @@ setup/environment.yml
 Please run the following command to make sure that everything works as expected:
 
 ```shell
-$ python mars-explorer/tests/test.py
+python mars-explorer/tests/test.py
 ```
 
 ## Manual Control
@@ -41,7 +52,7 @@ $ python mars-explorer/tests/test.py
 We have included a manual control of the agent, via the corresponding arrow keys. Run the manual control environment via:
 
 ```shell
-$ python mars-explorer/tests/manual.py
+python mars-explorer/tests/manual.py
 ```
 
 ## Execution of Algorithms
@@ -50,19 +61,19 @@ To train your own agents use the below commands.
 
 For TD3:
 ```shell
-$ python td3/td3_train.py
+python td3/td3_train.py
 ```
 For PPO:
 ```shell
-$ python ppo/ppo_train.py
+python ppo/ppo_train.py
 ```
 For Baseline DQN:
 ```shell
-$ python td3/baseline_dqn_train.py
+python td3/baseline_dqn_train.py
 ```
 For Baseline PPO:
 ```shell
-$ python ppo/baseline_ppo_train.py
+python ppo/baseline_ppo_train.py
 ```
 All of the results will be located in pickle files at:
 ```
@@ -91,11 +102,11 @@ To train and view the results of different learning rates use the below commands
 
 For TD3:
 ```shell
-$ python td3/td3_lr_test.py
+python td3/td3_lr_test.py
 ```
 For PPO:
 ```shell
-$ python ppo/ppo_lr_test.py
+python ppo/ppo_lr_test.py
 ```
 All the results for the plot functions as described above are stored at:
 ```
