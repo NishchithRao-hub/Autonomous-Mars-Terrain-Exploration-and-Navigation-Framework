@@ -21,6 +21,7 @@ cd Reinforcement-Learning-Based-Autonomous-Mars-Terrain-Exploration-and-Navigati
 ```
 3. Install the package.
 ```shell
+pip install gym==0.17.3
 pip install -e mars-explorer
 ```
 4. Install the dependencies.
