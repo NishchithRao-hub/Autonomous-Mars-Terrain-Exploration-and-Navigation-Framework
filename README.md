@@ -1,4 +1,4 @@
-# Reinforcement-Learning-Based-Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework
+# Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework
 
 Efficient autonomous exploration of uncharted terrains, such as the Martian surface, presents significant challenges in robotics and artificial intelligence. This project addresses the task of navigation and mapping in Mars-like environments by leveraging Deep Reinforcement Learning (DRL). Specifically, it explores and evaluates the performance of Twin Delayed Deep Deterministic Policy Gradient (TD3) and Proximal Policy Optimization (PPO) algorithms within the simulated MarsExplorer environment. The findings demonstrate enhanced terrain exploration, effective obstacle avoidance, and high coverage rates under defined constraints.
 
@@ -13,7 +13,7 @@ You can install MarsExplorer environment by using the following commands:
 
 1. Clone the repository.
 ```shell
-git clone https://github.com/GouriRajesh/Reinforcement-Learning-Based-Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework.git
+git clone https://github.com/NishchithRao-hub/Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework.git
 ```
 2. Move into the project root directory.
 ```shell
