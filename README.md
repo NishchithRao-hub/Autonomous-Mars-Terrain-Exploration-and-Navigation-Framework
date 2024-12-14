@@ -17,7 +17,7 @@ git clone https://github.com/GouriRajesh/Reinforcement-Learning-Based-Autonomous
 ```
 2. Move into the project root directory.
 ```shell
-cd Reinforcement-Learning-Based-Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework
+cd Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework
 ```
 3. Install the package.
 ```shell
