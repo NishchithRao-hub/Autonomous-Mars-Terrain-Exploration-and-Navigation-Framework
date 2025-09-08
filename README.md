@@ -117,4 +117,4 @@ All the results for the plot functions as described above are stored at:
 
 Here is a small video of how the PPO training looks like:
 
-<img src="utils/Mars-Explorer-V1.gif" width="600" height="600">
+<img src="utils/Mars-Explorer-V1.gif" width="450" height="450">
