@@ -1,4 +1,4 @@
-# Autonomous-Mars-Terrain-Exploration-and-Navigation-Framework
+# Overview
 
 Efficient autonomous exploration of uncharted terrains, such as the Martian surface, presents significant challenges in robotics and artificial intelligence. This project addresses the task of navigation and mapping in Mars-like environments by leveraging Deep Reinforcement Learning (DRL). Specifically, it explores and evaluates the performance of Twin Delayed Deep Deterministic Policy Gradient (TD3) and Proximal Policy Optimization (PPO) algorithms within the simulated MarsExplorer environment. The findings demonstrate enhanced terrain exploration, effective obstacle avoidance, and high coverage rates under defined constraints.
 
@@ -117,4 +117,4 @@ All the results for the plot functions as described above are stored at:
 
 Here is a small video of how the PPO training looks like:
 
-<img src="utils/Mars-Explorer-V1.gif" width="400" height="400">
+<img src="utils/Mars-Explorer-V1.gif" width="600" height="600">
